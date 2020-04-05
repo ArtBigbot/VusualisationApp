@@ -55,7 +55,7 @@ app.layout = html.Div([
 
     dcc.Interval(
         id='update',
-        interval=1 * 60000),
+        interval=300000),
 dcc.Tabs([
 
     dcc.Tab(label='Tab one', children=[
