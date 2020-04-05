@@ -63,6 +63,7 @@ dcc.Tabs([
             # 'gauges',
             html.Div([
 
+
                 daq.Gauge(
                     showCurrentValue=True,
                     id='temptureGauge',
