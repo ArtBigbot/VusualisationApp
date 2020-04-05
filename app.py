@@ -76,7 +76,7 @@ dcc.Tabs([
                     theme='dark',
                     style={'display': 'block'}
                 ),
-            ], style={'position': 'absolute', 'top': '20%', 'width': '200px',  'height': '250px', 'border': '3px solid #73AD21'}),
+            ], style={'position': 'absolute', 'top': '20%', 'width': '200px',  'height': '250px', }),
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='humidityGauge',
@@ -88,7 +88,7 @@ dcc.Tabs([
                           min=0,
                           size=170,
                           style={'display': 'block'})
-            ], style={'position': 'absolute', 'top': '52.5%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
+            ], style={'position': 'absolute', 'top': '52.5%', 'width': '200px', 'height': '250px', }),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
@@ -101,7 +101,7 @@ dcc.Tabs([
                           min=0,
                           size=170)
             ], style={'position': 'absolute', 'top': '20%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
-                      'height': '250px', 'border': '3px solid #73AD21'}),
+                      'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
@@ -114,7 +114,7 @@ dcc.Tabs([
                           min=0,
                           size=170)
             ], style={'position': 'absolute', 'top': '52.5%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
-                      'height': '250px', 'border': '3px solid #73AD21'}),
+                      'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
@@ -127,7 +127,7 @@ dcc.Tabs([
                           min=0,
                           size=170)
             ], style={'position': 'absolute', 'top': '85%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
-                      'height': '250px', 'border': '3px solid #73AD21'}),
+                      'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
@@ -140,7 +140,7 @@ dcc.Tabs([
                           min=0,
                           size=170)
             ], style={'position': 'absolute', 'top': '20%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
-                      'height': '250px', 'border': '3px solid #73AD21'}),
+                      'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
@@ -153,7 +153,7 @@ dcc.Tabs([
                           min=0,
                           size=170)
             ], style={'position': 'absolute', 'top': '52.5%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
-                      'height': '250px', 'border': '3px solid #73AD21'}),
+                      'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
@@ -166,7 +166,7 @@ dcc.Tabs([
                           min=0,
                           size=170)
             ], style={'position': 'absolute', 'top': '85%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
-                      'height': '250px', 'border': '3px solid #73AD21'}),
+                      'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
@@ -178,7 +178,7 @@ dcc.Tabs([
                           max=1,
                           min=0,
                           size=170)
-            ], style={'position': 'absolute', 'top': '85%', 'width': '200px',  'height': '250px', 'border': '3px solid #73AD21'}),
+            ], style={'position': 'absolute', 'top': '85%', 'width': '200px',  'height': '250px'}),
 
         ]),
     ]),
@@ -303,7 +303,7 @@ dcc.Tab(label='Tab two', children=[
 
                 dcc.Graph(
                     id='graphPIRon')
-            ], style={'display': 'inline-block', 'height': '15%', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%', 'border': '3px solid #73AD21'}),
+            ], style={'display': 'inline-block', 'height': '15%', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
             #], style={'padding': '120px 20px 20px 20px', })
         ])
     ])
