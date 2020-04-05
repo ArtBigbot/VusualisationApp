@@ -14,6 +14,7 @@ import sys, os
 import numpy as np
 import pandas.io.sql as psql
 import matplotlib.pyplot as plt
+from matplotlib import units
 
 conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel", password="ruuvisel")
 cursor = conn.cursor()
@@ -42,17 +43,25 @@ tepeture = data1['data']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app1 = dash.Dash(__name__, assets_folder='assets', include_assets_files=True)
 server = app.server
+theme = {
+    'dark': True,
+    'detail': '007439',
+    'primary': '#00EA64',
+    'secondary': '#6E6E6E',
+}
 app.layout = html.Div([
+
     html.H4('dbhitsa2019'),
     dcc.Interval(
-        id='graph-update',
+        id='update',
         interval=1 * 60000),
+dcc.Tabs([
+    dcc.Tab(label='Tab one', children=[
+        html.Div([
+            # 'gauges',
+            html.Div([
 
-html.Div([
-    #'gauges',
-         html.Div([
-
-         daq.Gauge(
+                daq.Gauge(
                     showCurrentValue=True,
                     id='temptureGauge',
                     color="#9B51E0",
@@ -61,251 +70,245 @@ html.Div([
                     min=0,
                     max=50,
                     size=170,
+                    theme='dark',
                     style={'display': 'block'}
-            ),
-    ], style={'width': '200px', 'height': '250px', 'border': '3px solid #73AD21' }),
-        html.Div([
-            daq.Gauge(showCurrentValue=True,
-                      id='humidityGauge',
-                      units="MPH",
-                      value=5,
-                      color="#9B51E0",
-                      label='niiskus',
-                      max=70,
-                      min=0,
-                      size=170,
-                      style={'display': 'block'})
-        ], style={'top': '40%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21' }),
+                ),
+            ], style={'position': 'absolute', 'top': '20%', 'width': '200px',  'height': '250px', 'border': '3px solid #73AD21'}),
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='humidityGauge',
+                          units="MPH",
+                          value=5,
+                          color="#9B51E0",
+                          label='niiskus',
+                          max=70,
+                          min=0,
+                          size=170,
+                          style={'display': 'block'})
+            ], style={'position': 'absolute', 'top': '52.5%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
 
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='lumenGauge',
+                          units="MPH",
+                          color="#9B51E0",
+                          value=5,
+                          label='Lumen',
+                          max=1000,
+                          min=0,
+                          size=170)
+            ], style={'position': 'absolute', 'top': '20%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
+                      'height': '250px', 'border': '3px solid #73AD21'}),
 
-        html.Div([
-            daq.Gauge(showCurrentValue=True,
-                      id='lumenGauge',
-                      units="MPH",
-                      color="#9B51E0",
-                      value=5,
-                      label='Lumen',
-                      max=1000,
-                      min=0,
-                      size=170)
-        ], style={'position': 'absolute', 'top': '7.5%', 'left': '12.5%', 'rigth': '80%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='ultravioletGauge',
+                          units="MPH",
+                          color="#9B51E0",
+                          value=5,
+                          label='Ultraviolet index',
+                          max=1,
+                          min=0,
+                          size=170)
+            ], style={'position': 'absolute', 'top': '52.5%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
+                      'height': '250px', 'border': '3px solid #73AD21'}),
 
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='IlluminanceGauge',
+                          units="MPH",
+                          color="#9B51E0",
 
+                          label='Illuminance',
+                          max=100,
+                          min=0,
+                          size=170)
+            ], style={'position': 'absolute', 'top': '85%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
+                      'height': '250px', 'border': '3px solid #73AD21'}),
 
-        html.Div([
-            daq.Gauge(showCurrentValue=True,
-                      id='ultravioletGauge',
-                      units="MPH",
-                      color="#9B51E0",
-                      value=5,
-                      label='Ultraviolet index',
-                      max=1,
-                      min=0,
-                      size=170)
-        ], style={'position': 'absolute', 'top': '40%', 'left': '12.5%', 'rigth': '80%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='TotalVoletileOrganicCompoundsGauge',
+                          units="MPH",
+                          color="#9B51E0",
 
+                          label='TotalVoletileOrganicCompounds',
+                          max=10,
+                          min=0,
+                          size=170)
+            ], style={'position': 'absolute', 'top': '20%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
+                      'height': '250px', 'border': '3px solid #73AD21'}),
 
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='detsibellGauge',
+                          units="MPH",
+                          color="#9B51E0",
 
-        html.Div([
-            daq.Gauge(showCurrentValue=True,
-                  id='IlluminanceGauge',
-                  units="MPH",
-                  color="#9B51E0",
-                  value=0.2,
+                          label='Detsibell',
+                          max=200,
+                          min=0,
+                          size=170)
+            ], style={'position': 'absolute', 'top': '52.5%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
+                      'height': '250px', 'border': '3px solid #73AD21'}),
 
-                  label='Illuminance',
-                  max=1,
-                  min=0,
-                  size=170)
-        ], style={'position': 'absolute', 'top': '72.5%', 'left': '12.5%', 'rigth': '80%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='CarbonDioxideEquivalentCO2Gauge',
+                          units="MPH",
+                          color="#9B51E0",
 
-        html.Div([
-            daq.Gauge(showCurrentValue=True,
-                  id='TotalVoletileOrganicCompoundsGauge',
-                  units="MPH",
-                  color="#9B51E0",
-                  value=0.2,
-                  label='TotalVoletileOrganicCompounds',
-                  max=1,
-                  min=0,
-                  size=170)
-        ],style={'position': 'absolute', 'top': '7.5%', 'left': '24.5%', 'rigth': '80%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
+                          label='CO2',
+                          max=1,
+                          min=0,
+                          size=170)
+            ], style={'position': 'absolute', 'top': '85%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
+                      'height': '250px', 'border': '3px solid #73AD21'}),
 
-        html.Div([
-            daq.Gauge(showCurrentValue=True,
-                  id='detsibellGauge',
-                  units="MPH",
-                  color="#9B51E0",
-                  value=0.2,
-                  label='Detsibell',
-                  max=1,
-                  min=0,
-                  size=170)
-        ], style={'position': 'absolute', 'top': '40%', 'left': '24.5%', 'rigth': '80%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
+            html.Div([
+                daq.Gauge(showCurrentValue=True,
+                          id='PirOn',
+                          units="MPH",
+                          color="#9B51E0",
+                          value=0.2,
+                          label='PIR on',
+                          max=1,
+                          min=0,
+                          size=170)
+            ], style={'position': 'absolute', 'top': '85%', 'width': '200px',  'height': '250px', 'border': '3px solid #73AD21'}),
 
-        html.Div([
-            daq.Gauge(showCurrentValue=True,
-                  id='CarbonDioxideEquivalentCO2Gauge',
-                  units="MPH",
-                  color="#9B51E0",
-                  value=0.2,
-                  label='CO2',
-                  max=1,
-                  min=0,
-                  size=170)
-        ], style={'position': 'absolute', 'top': '72.5%', 'left': '24.5%', 'rigth': '80%', 'width': '200px', 'height': '250px', 'border': '3px solid #73AD21'}),
+        ]),
+    ]),
 
-]),
-
-
-   # ]),
 
     #html.Div([
-
+dcc.Tab(label='Tab two', children=[
         html.Div([
 
-            dcc.RadioItems(
-                id='graph_type_tempeture',
-                options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-                value='Päevakeskmine',
-                labelStyle={'display': 'inline-block'}
-            ),
+                    dcc.RadioItems(
+                        id='graph_type_tempeture',
+                        options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                        value='Päevakeskmine',
+                        labelStyle={'display': 'inline-block'}
+                    ),
 
-            dcc.Graph(
-                id='graphTempeture')
-        ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),  # animate=True
-        #],
-    html.Div([
+                    dcc.Graph(
+                        id='graphTempeture')
+                ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),  # animate=True
+                #],
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_lumens',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_lumens',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphLumens')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
+                dcc.Graph(
+                    id='graphLumens')
+            ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
 
-    html.Div([
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_tvoc',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_tvoc',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphTVOC')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
+                dcc.Graph(
+                    id='graphTVOC')
+            ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
 
-    html.Div([
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_humidity',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_humidity',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphHumidity')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
+                dcc.Graph(
+                    id='graphHumidity')
+            ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
 
-    html.Div([
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_ultra_violetindex',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_ultra_violetindex',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphUltraVioletIndex')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
+                dcc.Graph(
+                    id='graphUltraVioletIndex')
+            ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
 
-    html.Div([
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_detsibel',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_detsibel',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphDetsibel')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
+                dcc.Graph(
+                    id='graphDetsibel')
+            ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
 
 
 
-    html.Div([
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_illuminance',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_illuminance',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphIlluminance')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
+                dcc.Graph(
+                    id='graphIlluminance')
+            ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
 
-    html.Div([
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_co2',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_co2',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphCO2')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
+                dcc.Graph(
+                    id='graphCO2')
+            ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
 
-    html.Div([
+            html.Div([
 
-        dcc.RadioItems(
-            id='graph_type_piron',
-            options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
-            value='Päevakeskmine',
-            labelStyle={'display': 'inline-block'}
-        ),
+                dcc.RadioItems(
+                    id='graph_type_piron',
+                    options=[{'label': i, 'value': i} for i in ['Päevakeskmine', 'Aegsel']],
+                    value='Päevakeskmine',
+                    labelStyle={'display': 'inline-block'}
+                ),
 
-        dcc.Graph(
-            id='graphPIRon')
-    ], style={'display': 'inline-block', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
-    #], style={'padding': '120px 20px 20px 20px', })
+                dcc.Graph(
+                    id='graphPIRon')
+            ], style={'display': 'inline-block', 'height': '15%', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%', 'border': '3px solid #73AD21'}),
+            #], style={'padding': '120px 20px 20px 20px', })
+        ])
+    ])
 ])
 
+
 @app.callback(dash.dependencies.Output('graphTempeture', 'figure'),
-               # dash.dependencies.Output('graphLumens', 'figure'),
-               # dash.dependencies.Output('graphTVOC', 'figure'),
-                #dash.dependencies.Output('graphHumidity', 'figure'),
-               # dash.dependencies.Output('graphUltraVioletIndex', 'figure'),
-                #dash.dependencies.Output('graphDetsibel', 'figure'),
-                #dash.dependencies.Output('graphAirPressure', 'figure'),
-                #dash.dependencies.Output('graphIlluminance', 'figure'),
-               # dash.dependencies.Output('graphCO2', 'figure'),
-               # dash.dependencies.Output('graphPIRon', 'figure')
-
-
-                [dash.dependencies.Input('graph_type_tempeture', 'value'),
-                 #dash.dependencies.Input('graph_type_lumens', 'value'),
-                 #dash.dependencies.Input('graph_type_tvoc', 'value'),
-                 #dash.dependencies.Input('graph_type_humidity', 'value'),
-                # dash.dependencies.Input('graph_type_ultra_violetindex', 'value'),
-                # dash.dependencies.Input('graph_type_detsibel', 'value'),
-                # dash.dependencies.Input('graph_type_air_pressure', 'value'),
-                 #dash.dependencies.Input('graph_type_illuminance', 'value'),
-                 #dash.dependencies.Input('graph_type_co2', 'value'),
-                 #dash.dependencies.Input('graph_type_piron', 'value')
-                 ])
+                [dash.dependencies.Input('graph_type_tempeture', 'value'),])
 def update_graph_tempeture(graph_type_tempeture):
 
 
@@ -319,17 +322,17 @@ def update_graph_tempeture(graph_type_tempeture):
                     [dash.dependencies.Input('graph_type_lumens', 'value'), ])
 def update_graph_lumens(graph_type_lumens):
     if graph_type_lumens == 'Aegsel':
-        return draw_graphScetter('Lumens','Lumens')
+        return draw_graphScetter('Lumens', 'Lumen')
     elif graph_type_lumens == 'Päevakeskmine':
-        return draw_graphBar('Lumens','Lumens')
+        return draw_graphBar('Lumens', 'Lumen')
 
 @app.callback(dash.dependencies.Output('graphTVOC', 'figure'),
              [dash.dependencies.Input('graph_type_tvoc', 'value'), ])
 def update_graph_tvoc(graph_type_tvoc):
     if graph_type_tvoc == 'Aegsel':
-        return draw_graphScetter('Total Volatile Organic Compunds', 'Total Volatile Organic Compunds')
+        return draw_graphScetter('Total Volatile Organic Compunds', 'Total Volatile Organic Compounds')
     elif graph_type_tvoc == 'Päevakeskmine':
-        return draw_graphBar('Total Volatile Organic Compunds', 'Total Volatile Organic Compunds')
+        return draw_graphBar('Total Volatile Organic Compunds', 'Total Volatile Organic Compounds')
 
 @app.callback(dash.dependencies.Output('graphHumidity', 'figure'),
              [dash.dependencies.Input('graph_type_humidity', 'value'), ])
@@ -396,7 +399,7 @@ def update_table(input_data):
 
 @app.callback(
    dash.dependencies.Output('temptureGauge', 'value'),
-    [dash.dependencies.Input('graph-update', 'n_intervals')]
+    [dash.dependencies.Input('update', 'n_intervals')]
  )
 def update_GaugeTemp(value):
     # return value
@@ -418,7 +421,7 @@ def update_GaugeTemp(value):
 
 @app.callback(
    dash.dependencies.Output('humidityGauge', 'value'),
-    [dash.dependencies.Input('graph-update', 'n_intervals')]
+    [dash.dependencies.Input('update', 'n_intervals')]
  )
 def update_GaugeHumidity(value):
     # return value
@@ -440,7 +443,7 @@ def update_GaugeHumidity(value):
 
 @app.callback(
    dash.dependencies.Output('lumenGauge', 'value'),
-    [dash.dependencies.Input('graph-update', 'n_intervals')]
+    [dash.dependencies.Input('update', 'n_intervals')]
  )
 def update_LumenGauge(value):
     # return value
@@ -462,7 +465,7 @@ def update_LumenGauge(value):
 
 @app.callback(
    dash.dependencies.Output('ultravioletGauge', 'value'),
-    [dash.dependencies.Input('graph-update', 'n_intervals')]
+    [dash.dependencies.Input('update', 'n_intervals')]
  )
 def update_ultravioletGauge(value):
     # return value
@@ -482,7 +485,115 @@ def update_ultravioletGauge(value):
         conn.close()
         return tempeture
 
+@app.callback(
+   dash.dependencies.Output('PirOn', 'value'),
+    [dash.dependencies.Input('update', 'n_intervals')]
+ )
+def update_PirOnGauge(value):
+    # return value
+        dataSQL = []
+        conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
+                                password="ruuvisel")
+        cursor = conn.cursor()
+        cursor.execute("SELECT data FROM vw_sensorsdata "
+                       "WHERE valuetype='PIR on' AND room = '208'  ORDER BY date_time  DESC LIMIT 1")
+        row = cursor.fetchone()
 
+        dataSQL.append(list(row))
+        labels = ['data']
+        dff = pd.DataFrame.from_records(dataSQL, columns=labels)
+
+        piron = dff.iat[0,0]
+        conn.close()
+        return piron
+
+@app.callback(
+   dash.dependencies.Output('IlluminanceGauge', 'value'),
+    [dash.dependencies.Input('update', 'n_intervals')]
+ )
+def update_IlluminanceGauge(value):
+    # return value
+        dataSQL = []
+        conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
+                                password="ruuvisel")
+        cursor = conn.cursor()
+        cursor.execute("SELECT data FROM vw_sensorsdata "
+                       "WHERE valuetype='Illuminance' AND room = '208'  ORDER BY date_time  DESC LIMIT 1")
+        row = cursor.fetchone()
+
+        dataSQL.append(list(row))
+        labels = ['data']
+        dff = pd.DataFrame.from_records(dataSQL, columns=labels)
+
+        illuminance = dff.iat[0,0]
+        conn.close()
+        return illuminance
+
+@app.callback(
+   dash.dependencies.Output('CarbonDioxideEquivalentCO2Gauge', 'value'),
+    [dash.dependencies.Input('update', 'n_intervals')]
+ )
+def update_CO2Gauge(value):
+    # return value
+        dataSQL = []
+        conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
+                                password="ruuvisel")
+        cursor = conn.cursor()
+        cursor.execute("SELECT data FROM vw_sensorsdata "
+                       "WHERE valuetype='Carbon dioxide equivalent CO2eq' AND room = '208'  ORDER BY date_time  DESC LIMIT 1")
+        row = cursor.fetchone()
+
+        dataSQL.append(list(row))
+        labels = ['data']
+        dff = pd.DataFrame.from_records(dataSQL, columns=labels)
+
+        co2 = dff.iat[0,0]
+        conn.close()
+        return co2
+
+@app.callback(
+   dash.dependencies.Output('detsibellGauge', 'value'),
+    [dash.dependencies.Input('update', 'n_intervals')]
+ )
+def update_detsibellGauge(value):
+    # return value
+        dataSQL = []
+        conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
+                                password="ruuvisel")
+        cursor = conn.cursor()
+        cursor.execute("SELECT data FROM vw_sensorsdata "
+                       "WHERE valuetype='Detsibell' AND room = '208'  ORDER BY date_time  DESC LIMIT 1")
+        row = cursor.fetchone()
+
+        dataSQL.append(list(row))
+        labels = ['data']
+        dff = pd.DataFrame.from_records(dataSQL, columns=labels)
+
+        detsibell = dff.iat[0,0]
+        conn.close()
+        return detsibell
+
+@app.callback(
+   dash.dependencies.Output('TotalVoletileOrganicCompoundsGauge', 'value'),
+    [dash.dependencies.Input('update', 'n_intervals')]
+ )
+def update_TVOCGauge(value):
+    # return value
+        dataSQL = []
+        conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
+                                password="ruuvisel")
+        cursor = conn.cursor()
+        cursor.execute("SELECT data FROM vw_sensorsdata "
+                       "WHERE valuetype='Total Volatile Organic Compounds' AND room = '208'  ORDER BY date_time  DESC LIMIT 1")
+        row = cursor.fetchone()
+
+        dataSQL.append(list(row))
+        labels = ['data']
+        dff = pd.DataFrame.from_records(dataSQL, columns=labels)
+
+        tvoc = dff.iat[0,0]
+        conn.close()
+        return tvoc
 
 def draw_graphScetter(name, parameter):
     dataSQL = []  # set an empty list
@@ -496,13 +607,13 @@ def draw_graphScetter(name, parameter):
     cursor.execute("SELECT date_time,  valuetype, data, dimension FROM vw_sensorsdata WHERE valuetype = '%s' AND room = '208'  ORDER BY date_time DESC LIMIT 20" % parameter)
     rows = cursor.fetchall()
     for row in rows:
-        dataSQL.append(list(row))
-        labels = ['date_time', 'valuetype', 'data', 'dimension']
-        df = pd.DataFrame.from_records(dataSQL, columns=labels)
-        dff = df[df['valuetype'] == parameter]
-        X = dff['date_time']
-        Y = dff['data']
-        dim = dff['dimension'].unique()
+            dataSQL.append(list(row))
+            labels = ['date_time', 'valuetype', 'data', 'dimension']
+            df = pd.DataFrame.from_records(dataSQL, columns=labels)
+            dff = df[df['valuetype'] == parameter]
+            X = dff['date_time']
+            Y = dff['data']
+            dim = dff['dimension'].unique()
 
     data = plotly.graph_objs.Scatter(
             x=list(X),
@@ -537,3 +648,4 @@ def draw_graphBar(name,parameter):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
