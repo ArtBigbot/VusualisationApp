@@ -52,6 +52,7 @@ theme = {
 app.layout = html.Div([
 
     html.H4('dbhitsa2019'),
+
     dcc.Interval(
         id='update',
         interval=1 * 60000),
