@@ -57,6 +57,7 @@ app.layout = html.Div([
         id='update',
         interval=1 * 60000),
 dcc.Tabs([
+
     dcc.Tab(label='Tab one', children=[
         html.Div([
             # 'gauges',
