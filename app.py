@@ -5,20 +5,24 @@ import dash_html_components as html
 import pandas as pd
 import random
 from collections import deque
-from dash.dependencies import Output, Input
+from dash.dependencies import Output, Input, State
 import plotly
-import plotly.graph_objs as go
 import dash_daq as daq
 import psycopg2
+import datetime as dt
+import plotly.graph_objects as go
 import sys, os
 import numpy as np
 import pandas.io.sql as psql
 import matplotlib.pyplot as plt
 from matplotlib import units
 
+
+
+
 conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel", password="ruuvisel")
 cursor = conn.cursor()
-query = "SELECT * FROM vw_sensorsdata ORDER BY date_time DESC LIMIT 20"
+query = "SELECT * FROM vw_sensorsdata WHERE room ='208' ORDER BY date_time DESC LIMIT 20"
 
 
 def create_pandas_table(query, database=conn):
@@ -26,29 +30,35 @@ def create_pandas_table(query, database=conn):
     return table
 
 
-df = create_pandas_table(query)
-available_indicators = df['valuetype'].unique()
-
+dataFrame = create_pandas_table(query)
+available_indicators = dataFrame['valuetype'].unique()
+sensors = dataFrame['sensor'].unique()
+types = dataFrame['valuetype'].unique()
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-query = "SELECT * FROM vw_sensorsdata WHERE valuetype='T' ORDER BY date_time DESC LIMIT 10000"
-data = create_pandas_table(query)
-data1 = data.loc[:, ['date_time', 'data']]
-import datetime
+#query = "SELECT * FROM vw_sensorsdata WHERE valuetype='T' ORDER BY date_time DESC LIMIT 10000"
+#data = create_pandas_table(query)
+#data1 = data.loc[:, ['date_time', 'data']]
 
-data1['date_time'] = pd.to_datetime(data1['date_time'])
-data1['kuupaev'] = data1['date_time'].dt.date
-data2 = data1.groupby(['kuupaev']).mean()
-tepeture = data1['data']
+
+#data1['date_time'] = pd.to_datetime(data1['date_time'])
+#data1['kuupaev'] = data1['date_time'].dt.date
+#data2 = data1.groupby(['kuupaev']).mean()
+#tepeture = data1['data']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app1 = dash.Dash(__name__, assets_folder='assets', include_assets_files=True)
 server = app.server
+
+
+
 theme = {
     'dark': True,
     'detail': '007439',
     'primary': '#00EA64',
     'secondary': '#6E6E6E',
 }
+
+
 app.layout = html.Div([
 
     html.H4('dbhitsa2019'),
@@ -56,8 +66,8 @@ app.layout = html.Div([
     dcc.Interval(
         id='update',
         interval=300000),
-dcc.Tabs([
 
+dcc.Tabs([
     dcc.Tab(label='Tab one', children=[
         html.Div([
             # 'gauges',
@@ -66,50 +76,71 @@ dcc.Tabs([
 
                 daq.Gauge(
                     showCurrentValue=True,
-                    id='temptureGauge',
+                    id='gaugeTemperatureAndHumiditySensor',
                     color="#9B51E0",
                     value=3,
-                    label='temperatuur',
+                    label='Temperature' 
+                          'Temperature and Humidity Sensor  '
+                          ' C   ',
                     min=0,
+                    max=50,
+                    size=170,
+                    theme='dark',
+                    style={'display': 'block'},
+
+                ),
+            ], style={'position': 'absolute', 'top': '20%', 'width': '200px',  'height': '250px'}),
+            html.Div([
+
+                daq.Gauge(
+                    showCurrentValue=True,
+                    id='gaugeHighAccuracySensor',
+                    color="#9B51E0",
+                    value=3,
+                    label='Temperature High Accuracy Sensor',
+                    min=0,
+                    units='C',
                     max=50,
                     size=170,
                     theme='dark',
                     style={'display': 'block'}
                 ),
-            ], style={'position': 'absolute', 'top': '20%', 'width': '200px',  'height': '250px', }),
+            ], style={'position': 'absolute', 'top': '20%', 'left' : '15%', 'width': '200px', 'height': '250px'}),
+
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='humidityGauge',
-                          units="MPH",
+                          units="%",
                           value=5,
                           color="#9B51E0",
-                          label='niiskus',
+                          label='Humidity  Temeperature and Humidity sensor',
                           max=70,
                           min=0,
                           size=170,
-                          style={'display': 'block'})
+
+                          style={'display': 'block', 'stroke-width': '20px'})
             ], style={'position': 'absolute', 'top': '52.5%', 'width': '200px', 'height': '250px', }),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='lumenGauge',
-                          units="MPH",
+                          units="lm",
                           color="#9B51E0",
                           value=5,
-                          label='Lumen',
+                          label='Sunlight Sensor Lumen',
                           max=1000,
                           min=0,
                           size=170)
-            ], style={'position': 'absolute', 'top': '20%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
+            ], style={'position': 'absolute', 'top': '20%', 'left': '30%', 'rigth': '80%', 'width': '200px',
                       'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='ultravioletGauge',
-                          units="MPH",
+                          units="Uv",
                           color="#9B51E0",
                           value=5,
-                          label='Ultraviolet index',
+                          label='Sunlight Sensor Ultraviolet index',
                           max=1,
                           min=0,
                           size=170)
@@ -119,36 +150,36 @@ dcc.Tabs([
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='IlluminanceGauge',
-                          units="MPH",
+                          units="Lux",
                           color="#9B51E0",
 
-                          label='Illuminance',
+                          label='Light Sensor Illuminance',
                           max=100,
                           min=0,
                           size=170)
-            ], style={'position': 'absolute', 'top': '85%', 'left': '12.5%', 'rigth': '80%', 'width': '200px',
+            ], style={'position': 'absolute', 'top': '52.5%', 'left': '40%', 'rigth': '80%', 'width': '200px',
                       'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='TotalVoletileOrganicCompoundsGauge',
-                          units="MPH",
+                          units="ppb",
                           color="#9B51E0",
 
-                          label='TotalVoletileOrganicCompounds',
+                          label='Grove VOC and eCO2 Gas Sensor TotalVoletile OrganicCompounds',
                           max=10,
                           min=0,
                           size=170)
-            ], style={'position': 'absolute', 'top': '20%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
+            ], style={'position': 'absolute', 'top': '20%', 'left': '40%', 'rigth': '80%', 'width': '200px',
                       'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='detsibellGauge',
-                          units="MPH",
+                          units="DB",
                           color="#9B51E0",
 
-                          label='Detsibell',
+                          label='Loudness Sensor  Detsibell',
                           max=200,
                           min=0,
                           size=170)
@@ -158,27 +189,28 @@ dcc.Tabs([
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='CarbonDioxideEquivalentCO2Gauge',
-                          units="MPH",
+                          units="ppm",
+                          style={'font-size': '30px'},
                           color="#9B51E0",
 
-                          label='CO2',
+                          label='Grove VOC and eCO2 Gas Sensor CO2',
                           max=1,
                           min=0,
                           size=170)
-            ], style={'position': 'absolute', 'top': '85%', 'left': '24.5%', 'rigth': '80%', 'width': '200px',
+            ], style={'position': 'absolute', 'top': '52.5%', 'left': '60%', 'rigth': '80%', 'width': '200px',
                       'height': '250px'}),
 
             html.Div([
                 daq.Gauge(showCurrentValue=True,
                           id='PirOn',
-                          units="MPH",
+
                           color="#9B51E0",
                           value=0.2,
-                          label='PIR on',
+                          label='PIR motion Sensor PIR on',
                           max=1,
                           min=0,
                           size=170)
-            ], style={'position': 'absolute', 'top': '85%', 'width': '200px',  'height': '250px'}),
+            ], style={'position': 'absolute', 'top': '20%', 'left': '50%', 'rigth': '80%', 'width': '200px',  'height': '250px'}),
 
         ]),
     ]),
@@ -305,8 +337,102 @@ dcc.Tab(label='Tab two', children=[
                     id='graphPIRon')
             ], style={'display': 'inline-block', 'height': '15%', 'width': '30%', 'top': '700%', 'left': '330%', 'right': '20%'}),
             #], style={'padding': '120px 20px 20px 20px', })
-        ])
+        ]),
+
+dcc.Tab(label='Tab three', children=[
+                html.Div([
+                    dcc.Dropdown(
+                        id='indicator',
+                        options=[{'label': i, 'value': i}for i in available_indicators],
+                        value='T'),
+
+                        dcc.DatePickerRange(
+                        id ="datePickerId",
+                        #start_date=""
+                        start_date_placeholder_text="Start Period",
+                        start_date_id="startDateId",
+                        end_date_id="endDateId",
+                        start_date='2020-04-01',
+                        end_date='2020-04-10',
+                        display_format='MMM Do, YY',
+                        end_date_placeholder_text="End Period",
+
+                        )
+
+                ], style ={'width': '15%'},),
+         html.Div([ dash_table.DataTable(
+                    id='data_table',
+                    #page_sice=5,
+                    #data=dataFrame.to_dict('records'),
+                    columns=[{'id': c, 'name': c, 'hideable': True} for c in dataFrame.columns],
+                    #fixed_rows={'headers': True, 'data': 0},
+                    export_format='xlsx',
+                    export_headers='display',
+                    style_table={
+                    'maxHeight': '700px',
+                    'maxWidth': '1700px',
+                    'overflowY': 'scroll',
+                    'overflowX': 'scroll'
+                    },
+                    style_cell={
+                    'width': '190px',
+                    'height': '60px',
+                    'font-size': '20px',
+                    'textAlign': 'center'
+                    }
+                )], style={'position': 'absolute', 'top': '18%', 'left': '15%', 'rigth': '80%', 'width': '1700px',
+                      'height': '700px', 'border': '9B51E0'}),
+
+
+        html.Div([
+             dcc.Dropdown(
+                 id = 'dropDownList',
+                    options=[
+                        {'label': 'Hour average', 'value': 'Hour average'},
+                        {'label': 'Day average', 'value': 'Day average'},
+                        {'label': 'Week average', 'value': 'Week average'},
+                        {'label': 'Mounth average', 'value': 'Mounth average'}
+                    ],
+                    placeholder="Select a parameter",
+                ),
+
+            dcc.Graph(
+                    id='graph'
+            )], style={'position': 'absolute', 'top' : '110%', 'left': '15%', 'width': '1700px'})
+
+    ]),
+    dcc.Tab(label='Tab four', children=[
+        html.Div([
+            dcc.Dropdown(
+                id='firstParameter',
+                options =[{'label': i, 'value': i} for i in available_indicators], style={'width': '50%'},
+                value='T'
+            ),
+            dcc.Dropdown(
+                id='secondParameter',
+                options=[{'label': i, 'value': i} for i in available_indicators], style={'top': '10%','left': '60%','width': '50%' },
+                value='Humidity'
+            ),
+              dcc.DatePickerRange(
+              id ="datePickerRangeId",
+              #start_date=""
+              start_date_placeholder_text="Start Period",
+              start_date_id="startDateId",
+              end_date_id="endDateId",
+              start_date='2020-04-01',
+              end_date='2020-04-10',
+              display_format='MMM Do, YY',
+              end_date_placeholder_text="End Period",
+
+            ),
+            dcc.Graph(
+                id='crossfilterParameterGraph',
+                hoverData={'points': [{'customdata': ''}]}
+            )
+        ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'})
+
     ])
+  ])
 ])
 
 
@@ -386,31 +512,59 @@ def update_graph_detsibell(graph_type_piron):
         return draw_graphBar('PIR on', 'PIR on')
 
 
-def update_table(input_data):
-    conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
-                            password="ruuvisel")
+@app.callback(
+    Output(component_id='data_table', component_property='data'),
+    [#Input(component_id='btnSearch', component_property='n_clicks'),
+     Input(component_id='indicator', component_property='value'),
+     Input(component_id='datePickerId', component_property='start_date'),
+     Input(component_id='datePickerId', component_property='end_date')]
+)
+def update_table(parameter, start_date, end_date):
+
     cursor = conn.cursor()
-    query = "SELECT * FROM vw_sensorsdata ORDER BY date_time DESC LIMIT 20"
+    query= "SELECT * FROM vw_sensorsdata WHERE room= '208' AND valuetype ='%s' AND date_time BETWEEN '%s' AND '%s' ORDER BY date_time DESC " % (parameter,start_date,end_date)
 
     def create_pandas_table(query, database=conn):
-        table = pd.read_sql_query(query, database)
+        table = pd.read_sql_query(query,database)
         return table
 
     df = create_pandas_table(query)
+    #df.filter()
     return df.to_dict('records')
 
 
 @app.callback(
-   dash.dependencies.Output('temptureGauge', 'value'),
+   dash.dependencies.Output('gaugeTemperatureAndHumiditySensor', 'value'),
     [dash.dependencies.Input('update', 'n_intervals')]
  )
-def update_GaugeTemp(value):
+def update_GaugeTempFromTemperatureAndHumiditySensor(value):
     # return value
         dataSQL = []
         conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
                                 password="ruuvisel")
         cursor = conn.cursor()
-        cursor.execute("SELECT  data FROM vw_sensorsdata WHERE valuetype ='T' AND room = '208' ORDER BY date_time DESC LIMIT 1")
+        cursor.execute("SELECT  data FROM vw_sensorsdata WHERE valuetype ='T' AND room = '208' AND sensor ='Temperature and Humidity Sensor Pro' ORDER BY date_time DESC LIMIT 1")
+        row = cursor.fetchone()
+
+        dataSQL.append(list(row))
+        labels = ['data']
+        dff = pd.DataFrame.from_records(dataSQL, columns=labels)
+
+        tempeture = dff.iat[0,0]
+        conn.close()
+        return tempeture
+
+@app.callback(
+   dash.dependencies.Output('gaugeHighAccuracySensor', 'value'),
+    [dash.dependencies.Input('update', 'n_intervals')]
+ )
+def update_GaugeTempFromHighAccuracyTemperature(value):
+
+        dataSQL = []
+        conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
+                                password="ruuvisel")
+        cursor = conn.cursor()
+        cursor.execute("SELECT  data FROM vw_sensorsdata WHERE valuetype ='T' AND room = '208' AND sensor ='High Accuracy Temperature' ORDER BY date_time DESC LIMIT 1")
         row = cursor.fetchone()
 
         dataSQL.append(list(row))
@@ -439,9 +593,9 @@ def update_GaugeHumidity(value):
         labels = ['data']
         dff = pd.DataFrame.from_records(dataSQL, columns=labels)
 
-        tempeture = dff.iat[0,0]
+        humidity = dff.iat[0,0]
         conn.close()
-        return tempeture
+        return humidity
 
 
 @app.callback(
@@ -461,9 +615,9 @@ def update_LumenGauge(value):
         labels = ['data']
         dff = pd.DataFrame.from_records(dataSQL, columns=labels)
 
-        tempeture = dff.iat[0,0]
+        lumens = dff.iat[0,0]
         conn.close()
-        return tempeture
+        return lumens
 
 
 @app.callback(
@@ -484,9 +638,9 @@ def update_ultravioletGauge(value):
         labels = ['data']
         dff = pd.DataFrame.from_records(dataSQL, columns=labels)
 
-        tempeture = dff.iat[0,0]
+        uvIndex = dff.iat[0,0]
         conn.close()
-        return tempeture
+        return uvIndex
 
 @app.callback(
    dash.dependencies.Output('PirOn', 'value'),
@@ -647,6 +801,71 @@ def draw_graphBar(name,parameter):
     return {'data': [data],
             'layout': go.Layout(title=go.layout.Title(text='Päevakeskmised: {}, {}'.format(name, dim)))}
 
+
+@app.callback(dash.dependencies.Output('graph', 'figure'),
+              [Input(component_id='indicator', component_property='value'),
+              Input(component_id='dropDownList', component_property='value'),
+              Input(component_id='datePickerId', component_property='start_date'),
+              Input(component_id='datePickerId', component_property='end_date')])
+def drawGraphBarAverage(parameter, dropDownList, startDate, endDate):
+    query= "SELECT * FROM vw_sensorsdata WHERE room= '208' AND valuetype ='%s' AND date_time BETWEEN '%s' AND '%s' ORDER BY date_time DESC " % (parameter,startDate,endDate)
+   # conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
+             #               password="ruuvisel")
+    cursor = conn.cursor()
+
+    dataFrame = create_pandas_table(query)
+
+    dim = dataFrame['dimension'].unique()
+    dff2 = dataFrame.loc[:, ['date_time', 'data']]
+    dff2['date_time'] = pd.to_datetime(dff2['date_time'])
+    if dropDownList =='Hour average':
+        dff2['hours'] = dff2['date_time'].dt.hour
+        dff2['dates'] = dff2['date_time'].dt.date
+        data4 = dff2.groupby(['dates', 'hours'], as_index=False).mean()
+        data4['dateAndHours'] = data4['dates'].astype(str).apply(lambda x: dt.datetime.strptime(x , '%Y-%m-%d'))+pd.to_timedelta(data4['hours'], unit='h')#.astype(str)#.apply(lambda x: dt.datetime.strptime(x , '%H')).time()
+            #dt.datetime.combine(dt.datetime.strptime(data4['dates'].astype(str), '%Y-%m-%d'), dt.time(data4['hours'], 0))
+        #dt.datetime.strptime
+        #data2Hours = data2['hours'].mean()
+        data = go.Bar(x=list(data4['dateAndHours']), y=list(data4['data']))
+    elif dropDownList =='Day average':
+        dff2['hours'] = dff2['date_time'].dt.hour
+        dff2['dates'] = dff2['date_time'].dt.date
+        data4 = dff2.groupby(['dates']).mean()
+        data = go.Bar(x=data4.index.map(str), y=list(data4['data']))
+        #data2Hours = data2['hours'].mean()
+    elif dropDownList =='Week average':
+        dff2['weeks'] = dff2['date_time'].dt.week
+        data4 = dff2.groupby(['weeks']).mean()
+        #data4 = dff2.groupby(['dates']).mean()
+            # data2Hours = data2['hours'].mean()
+        data = go.Bar(x=data4.index.map(str), y=list(data4['data']))
+    else:
+
+         dff2['mounth'] = dff2['date_time'].dt.month
+         data4 = dff2.groupby(['mounth']).mean()
+            # data2Hours = data2['hours'].mean()
+         data = go.Bar(x=data4.index.map(str), y=list(data4['data']))
+
+
+
+    return {'data': [data],
+            'layout': go.Layout(title=go.layout.Title(text=': {}, {}'.format(parameter, dim)))}
+
+
+#@app.callback(Output(component_id='crossfilterParameterGraph', component_property='figure')
+             # [Input(component_id='firstParameter', component_property='value'),
+             # Input(component_id='secondParameter', component_property='value'),
+             # Input(component_id='startDateId', component_property='start_date'),
+             # Input(component_id='endDateId', component_property='end_date')]
+            #  )
+#def updateGraphRatio(firstParameter, secondParameter, startDatePeriod, endDatePeriod)
+   # query = "SELECT date_time,  data, dimension FROM vw_sensorsdata WHERE valuetype= '%s' AND valuetype = '%s' AND date_time BETWEEN '%s' AND '%s' ORDER BY date_time DESC LIMIT 5000" % (firstParameter, secondParameter,startDatePeriod,endDatePeriod)
+
+    #dataFrame = create_pandas_table(query)
+
+    #return{
+       # 'data' :[go.Scatter()]
+   # }
 
 
 if __name__ == '__main__':
