@@ -32,32 +32,11 @@ def create_pandas_table(query, database=conn):
 
 dataFrame = create_pandas_table(query)
 available_indicators = dataFrame['valuetype'].unique()
-sensors = dataFrame['sensor'].unique()
-types = dataFrame['valuetype'].unique()
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-#query = "SELECT * FROM vw_sensorsdata WHERE valuetype='T' ORDER BY date_time DESC LIMIT 10000"
-#data = create_pandas_table(query)
-#data1 = data.loc[:, ['date_time', 'data']]
-
-
-#data1['date_time'] = pd.to_datetime(data1['date_time'])
-#data1['kuupaev'] = data1['date_time'].dt.date
-#data2 = data1.groupby(['kuupaev']).mean()
-#tepeture = data1['data']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app1 = dash.Dash(__name__, assets_folder='assets', include_assets_files=True)
 server = app.server
-
-
-
-theme = {
-    'dark': True,
-    'detail': '007439',
-    'primary': '#00EA64',
-    'secondary': '#6E6E6E',
-}
-
 
 app.layout = html.Div([
 
@@ -439,8 +418,6 @@ dcc.Tab(label='Tab three', children=[
 @app.callback(dash.dependencies.Output('graphTempeture', 'figure'),
                 [dash.dependencies.Input('graph_type_tempeture', 'value'),])
 def update_graph_tempeture(graph_type_tempeture):
-
-
     if graph_type_tempeture == 'Aegsel':
             return draw_graphScetter('Temperatuur','T')
     elif graph_type_tempeture == 'Päevakeskmine':
@@ -514,23 +491,16 @@ def update_graph_detsibell(graph_type_piron):
 
 @app.callback(
     Output(component_id='data_table', component_property='data'),
-    [#Input(component_id='btnSearch', component_property='n_clicks'),
-     Input(component_id='indicator', component_property='value'),
+    [Input(component_id='indicator', component_property='value'),
      Input(component_id='datePickerId', component_property='start_date'),
-     Input(component_id='datePickerId', component_property='end_date')]
+     Input(component_id='datePickerId', component_property='end_date')
+     ]
 )
 def update_table(parameter, start_date, end_date):
-
-    cursor = conn.cursor()
-    query= "SELECT * FROM vw_sensorsdata WHERE room= '208' AND valuetype ='%s' AND date_time BETWEEN '%s' AND '%s' ORDER BY date_time DESC " % (parameter,start_date,end_date)
-
-    def create_pandas_table(query, database=conn):
-        table = pd.read_sql_query(query,database)
-        return table
-
-    df = create_pandas_table(query)
-    #df.filter()
-    return df.to_dict('records')
+    query= "SELECT * FROM vw_sensorsdata WHERE room= '208' AND valuetype ='%s' AND date_time BETWEEN '%s' AND " \
+           "'%s' ORDER BY date_time DESC " % (parameter,start_date,end_date)
+    table = pd.read_sql_query(query,conn)
+    return table.to_dict('records')
 
 
 @app.callback(
@@ -538,12 +508,13 @@ def update_table(parameter, start_date, end_date):
     [dash.dependencies.Input('update', 'n_intervals')]
  )
 def update_GaugeTempFromTemperatureAndHumiditySensor(value):
-    # return value
+
         dataSQL = []
         conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
                                 password="ruuvisel")
         cursor = conn.cursor()
-        cursor.execute("SELECT  data FROM vw_sensorsdata WHERE valuetype ='T' AND room = '208' AND sensor ='Temperature and Humidity Sensor Pro' ORDER BY date_time DESC LIMIT 1")
+        cursor.execute("SELECT  data FROM vw_sensorsdata WHERE valuetype ='T' AND room = '208' AND" +
+                       " sensor ='Temperature and Humidity Sensor Pro' ORDER BY date_time DESC LIMIT 1")
         row = cursor.fetchone()
 
         dataSQL.append(list(row))
@@ -756,11 +727,6 @@ def draw_graphScetter(name, parameter):
     dataSQL = []  # set an empty list
     X = deque(maxlen=20)
     Y = deque(maxlen=20)
-
-    conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
-                            password="ruuvisel")
-    cursor = conn.cursor()
-
     cursor.execute("SELECT date_time,  valuetype, data, dimension FROM vw_sensorsdata WHERE valuetype = '%s' AND room = '208'  ORDER BY date_time DESC LIMIT 20" % parameter)
     rows = cursor.fetchall()
     for row in rows:
@@ -786,12 +752,7 @@ def draw_graphScetter(name, parameter):
 
 def draw_graphBar(name,parameter):
     query = "SELECT date_time,  data, dimension FROM vw_sensorsdata WHERE valuetype= '%s' AND room = '208' ORDER BY date_time DESC LIMIT 5000" % parameter
-    conn = psycopg2.connect(host="dev.vk.edu.ee", port=5432, database="dbhitsa2019", user="ruuvi_sel",
-                            password="ruuvisel")
-    cursor = conn.cursor()
-
     dff = create_pandas_table(query)
-
     dim = dff['dimension'].unique()
     dff1 = dff.loc[:, ['date_time', 'data']]
     dff1['date_time'] = pd.to_datetime(dff1['date_time'])
@@ -870,4 +831,3 @@ def drawGraphBarAverage(parameter, dropDownList, startDate, endDate):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
