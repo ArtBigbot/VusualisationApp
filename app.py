@@ -331,8 +331,8 @@ dcc.Tab(label='Tab three', children=[
                         start_date_placeholder_text="Start Period",
                         start_date_id="startDateId",
                         end_date_id="endDateId",
-                        start_date='2020-04-01',
-                        end_date='2020-04-10',
+                        start_date='2020-05-06',
+                        end_date='2020-05-21',
                         display_format='MMM Do, YY',
                         end_date_placeholder_text="End Period",
 
