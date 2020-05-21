@@ -468,9 +468,9 @@ def update_graph_detsibell(graph_type_detsibel):
              [dash.dependencies.Input('graph_type_illuminance', 'value'), ])
 def update_graph_detsibell(graph_type_illuminance):
     if graph_type_illuminance == 'Aegsel':
-        return draw_graphScetter('Illuminatsioon', 'Illuminance')
+        return draw_graphScetter('Illuminatsioon', 'Illuminance (IR)')
     elif graph_type_illuminance == 'Päevakeskmine':
-        return draw_graphBar('Illuminatsioon', 'Illuminance')
+        return draw_graphBar('Illuminatsioon', 'Illuminance (IR)')
 
 @app.callback(dash.dependencies.Output('graphCO2', 'figure'),
              [dash.dependencies.Input('graph_type_co2', 'value'), ])
