@@ -646,7 +646,7 @@ def update_IlluminanceGauge(value):
                                 password="ruuvisel")
         cursor = conn.cursor()
         cursor.execute("SELECT data FROM vw_sensorsdata "
-                       "WHERE valuetype='Illuminance' AND room = '208'  ORDER BY date_time  DESC LIMIT 1")
+                       "WHERE valuetype='Illuminance (IR)' AND room = '208'  ORDER BY date_time  DESC LIMIT 1")
         row = cursor.fetchone()
 
         dataSQL.append(list(row))
